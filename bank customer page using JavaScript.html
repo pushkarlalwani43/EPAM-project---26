@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>XYZ Bank — Customer Portal</title>
+<style>
+  :root{
+    --ink:#132a3a;
+    --paper:#f6f3ec;
+    --vault:#0f3d3e;
+    --brass:#b9863f;
+    --brass-light:#e8c68a;
+    --danger:#a8432f;
+    --line:#d8d0bf;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Georgia',serif;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  header{
+    background:var(--vault);
+    color:var(--brass-light);
+    padding:28px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:4px solid var(--brass);
+  }
+  header .brand{
+    font-size:26px;
+    letter-spacing:2px;
+    font-weight:bold;
+  }
+  header .brand span{color:var(--brass);}
+  #welcomeMsg{
+    font-family:'Trebuchet MS',sans-serif;
+    font-size:14px;
+    opacity:0;
+    transition:opacity .6s ease;
+  }
+  #welcomeMsg.show{opacity:1;}
+
+  main{
+    max-width:920px;
+    margin:40px auto;
+    padding:0 20px 60px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px 32px;
+    margin-bottom:28px;
+    box-shadow:0 2px 6px rgba(19,42,58,.06);
+  }
+  h2{
+    margin-top:0;
+    font-family:'Trebuchet MS',sans-serif;
+    letter-spacing:.5px;
+    border-bottom:2px solid var(--brass);
+    padding-bottom:8px;
+  }
+  label{
+    display:block;
+    font-family:'Trebuchet MS',sans-serif;
+    font-size:13px;
+    margin:14px 0 4px;
+    color:#4a5b66;
+  }
+  input[type=text], input[type=number]{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    font-size:15px;
+    font-family:'Trebuchet MS',sans-serif;
+  }
+  button{
+    font-family:'Trebuchet MS',sans-serif;
+    font-weight:bold;
+    letter-spacing:.5px;
+    padding:11px 22px;
+    border:none;
+    border-radius:4px;
+    background:var(--vault);
+    color:var(--brass-light);
+    cursor:pointer;
+    margin-top:16px;
+    margin-right:10px;
+    transition:background .2s ease;
+  }
+  button:hover{background:#0a2b2c;}
+  button.secondary{background:var(--brass);color:var(--vault);}
+  button.secondary:hover{background:var(--brass-light);}
+
+  #balanceCard{
+    background:var(--vault);
+    color:var(--brass-light);
+    text-align:center;
+  }
+  #balanceCard h2{border-color:var(--brass-light);}
+  #balanceValue{
+    font-size:42px;
+    font-weight:bold;
+    margin:6px 0 0;
+  }
+  #balanceValue span{font-size:20px;opacity:.7;}
+
+  .msg{
+    font-family:'Trebuchet MS',sans-serif;
+    font-size:14px;
+    margin-top:12px;
+    padding:10px 14px;
+    border-radius:4px;
+    display:none;
+  }
+  .msg.ok{background:#e4efe4;color:#2c5e2c;display:block;}
+  .msg.err{background:#f3e3e0;color:var(--danger);display:block;}
+
+  #registerSteps{
+    overflow:hidden;
+    max-height:600px;
+    transition:max-height .5s ease, opacity .4s ease;
+    opacity:1;
+  }
+  #registerSteps.hidden{max-height:0;opacity:0;}
+  #registerSteps ol{
+    font-family:'Trebuchet MS',sans-serif;
+    font-size:14px;
+    line-height:1.8;
+  }
+
+  #couponResult{
+    font-family:'Courier New',monospace;
+    font-size:22px;
+    letter-spacing:3px;
+    background:#fdf6e3;
+    border:1px dashed var(--brass);
+    padding:14px 18px;
+    margin-top:16px;
+    border-radius:4px;
+    display:none;
+  }
+
+  footer{
+    text-align:center;
+    font-family:'Trebuchet MS',sans-serif;
+    font-size:12px;
+    color:#8a8a8a;
+    padding:20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">XYZ <span>BANK</span></div>
+  <div id="welcomeMsg"></div>
+</header>
+
+<main>
+
+  <!-- ACCOUNT BALANCE -->
+  <div class="card" id="balanceCard">
+    <h2>Available Balance</h2>
+    <div id="balanceValue"><span>&#8377;</span> <span id="balanceNum">25,000</span></div>
+  </div>
+
+  <!-- DEPOSIT / WITHDRAW -->
+  <div class="card">
+    <h2>Deposit &amp; Withdrawal</h2>
+    <label for="amount">Enter Amount (&#8377;)</label>
+    <input type="number" id="amount" min="1" placeholder="e.g. 1000">
+    <div>
+      <button onclick="deposit()">Deposit</button>
+      <button class="secondary" onclick="withdraw()">Withdraw</button>
+    </div>
+    <div id="txMsg" class="msg"></div>
+  </div>
+
+  <!-- DIWALI COUPON CASE STUDY -->
+  <div class="card">
+    <h2>Diwali Festival Bonanza — Coupon Registration</h2>
+    <p style="font-family:'Trebuchet MS',sans-serif;font-size:14px;color:#4a5b66;">
+      Existing customers can register below to instantly generate their personal Diwali coupon code.
+    </p>
+
+    <button onclick="toggleSteps()" id="registerBtn">Register for Coupon</button>
+
+    <div id="registerSteps">
+      <ol>
+        <li>Enter your Customer ID below.</li>
+        <li>Click <strong>Generate Coupon Code</strong>.</li>
+        <li>Your unique code is created instantly from your Customer ID.</li>
+        <li>Use the code at checkout on any XYZ Bank partner store.</li>
+      </ol>
+
+      <label for="custId">Customer ID</label>
+      <input type="text" id="custId" placeholder="e.g. 4521">
+      <button onclick="generateCoupon()">Generate Coupon Code</button>
+
+      <div id="couponResult"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>XYZ Bank Demo Portal — for training purposes only</footer>
+
+<script>
+  // ---------- state ----------
+  var balance = 25000;
+
+  // ---------- welcome message (mouseover trigger, like the course sample) ----------
+  var header = document.querySelector('header');
+  var welcomeEl = document.getElementById('welcomeMsg');
+
+  function popup() {
+    welcomeEl.textContent = "Welcome back, valued customer!";
+    welcomeEl.classList.add('show');
+  }
+  header.addEventListener('mouseover', popup);
+  // also show it once automatically on page load
+  window.addEventListener('load', popup);
+
+  // ---------- deposit / withdraw ----------
+  function formatMoney(n) {
+    return n.toLocaleString('en-IN');
+  }
+
+  function updateBalanceDisplay() {
+    document.getElementById('balanceNum').textContent = formatMoney(balance);
+  }
+
+  function showTxMsg(text, isError) {
+    var el = document.getElementById('txMsg');
+    el.textContent = text;
+    el.className = 'msg ' + (isError ? 'err' : 'ok');
+  }
+
+  function getAmount() {
+    var val = parseFloat(document.getElementById('amount').value);
+    if (isNaN(val) || val <= 0) {
+      showTxMsg('Please enter a valid amount.', true);
+      return null;
+    }
+    return val;
+  }
+
+  function deposit() {
+    var amt = getAmount();
+    if (amt === null) return;
+    balance += amt;
+    updateBalanceDisplay();
+    showTxMsg('Deposited ₹' + formatMoney(amt) + ' successfully.', false);
+    document.getElementById('amount').value = '';
+  }
+
+  function withdraw() {
+    var amt = getAmount();
+    if (amt === null) return;
+    if (amt > balance) {
+      showTxMsg('Insufficient balance for this withdrawal.', true);
+      return;
+    }
+    balance -= amt;
+    updateBalanceDisplay();
+    showTxMsg('Withdrew ₹' + formatMoney(amt) + ' successfully.', false);
+    document.getElementById('amount').value = '';
+  }
+
+  // ---------- register button hides/shows steps ----------
+  function toggleSteps() {
+    var steps = document.getElementById('registerSteps');
+    var btn = document.getElementById('registerBtn');
+    steps.classList.toggle('hidden');
+    btn.textContent = steps.classList.contains('hidden')
+      ? 'Register for Coupon'
+      : 'Hide Registration Steps';
+  }
+
+  // ---------- coupon code generation based on customer id ----------
+  function generateCoupon() {
+    var custId = document.getElementById('custId').value.trim();
+    var resultEl = document.getElementById('couponResult');
+
+    if (custId === '') {
+      resultEl.style.display = 'block';
+      resultEl.style.color = '#a8432f';
+      resultEl.textContent = 'Please enter your Customer ID first.';
+      return;
+    }
+
+    // simple deterministic code: DIWALI + reversed id + checksum
+    var reversed = custId.split('').reverse().join('');
+    var checksum = 0;
+    for (var i = 0; i < custId.length; i++) {
+      checksum += custId.charCodeAt(i);
+    }
+    checksum = checksum % 100;
+
+    var code = 'DIWALI' + reversed + '-' + checksum;
+
+    resultEl.style.display = 'block';
+    resultEl.style.color = '#132a3a';
+    resultEl.textContent = 'Your Coupon Code: ' + code;
+  }
+</script>
+
+</body>
+</html>
